@@ -89,6 +89,11 @@ mkdir -p "$MOUNT_DIR/Scripts"
 # MC-Fusion support files
 mkdir -p "$MOUNT_DIR/mc-fusion"
 
+# Bundle default MiSTer.ini with MC-Fusion.
+# This downloads MiSTer_example.ini and stores it as MiSTer.ini.
+curl -fLsS -o "$MOUNT_DIR/mc-fusion/MiSTer.ini" \
+  "https://raw.githubusercontent.com/Anime0t4ku/mister-companion/main/assets/MiSTer_example.ini"
+
 # Bundle MiSTer Companion Remote script with MC-Fusion
 curl -fLsS -o "$MOUNT_DIR/Scripts/companion_remote.sh" \
   "https://raw.githubusercontent.com/Anime0t4ku/mister-companion/main/mister-companion/assets/companion_remote.sh"
@@ -101,6 +106,24 @@ curl -fLsS -o "$MOUNT_DIR/Scripts/update_all.sh" \
 
 chmod +x "$MOUNT_DIR/Scripts/update_all.sh" 2>/dev/null || true
 
+# Bundle Auto Time script with MC-Fusion
+curl -fLsS -o "$MOUNT_DIR/Scripts/auto_time.sh" \
+  "https://raw.githubusercontent.com/Anime0t4ku/0t4ku-mister-scripts/main/Scripts/auto_time.sh"
+
+chmod +x "$MOUNT_DIR/Scripts/auto_time.sh" 2>/dev/null || true
+
+# Bundle Static Wallpaper script with MC-Fusion
+curl -fLsS -o "$MOUNT_DIR/Scripts/static_wallpaper.sh" \
+  "https://raw.githubusercontent.com/Anime0t4ku/0t4ku-mister-scripts/main/Scripts/static_wallpaper.sh"
+
+chmod +x "$MOUNT_DIR/Scripts/static_wallpaper.sh" 2>/dev/null || true
+
+# Bundle CD Game Organizer script with MC-Fusion
+curl -fLsS -o "$MOUNT_DIR/Scripts/cd_game_organizer.sh" \
+  "https://raw.githubusercontent.com/Anime0t4ku/0t4ku-mister-scripts/main/Scripts/cd_game_organizer.sh"
+
+chmod +x "$MOUNT_DIR/Scripts/cd_game_organizer.sh" 2>/dev/null || true
+
 if [[ -f /files/mc-fusion/menu.png ]]; then
   cp /files/mc-fusion/menu.png "$MOUNT_DIR/mc-fusion/menu.png"
 else
@@ -112,6 +135,10 @@ MC-Fusion
 mister_companion_ready=true
 includes_companion_remote=true
 includes_update_all=true
+includes_auto_time=true
+includes_static_wallpaper=true
+includes_cd_game_organizer=true
+includes_default_mister_ini=true
 includes_custom_menu_wallpaper=true
 first_boot_remote_setup=true
 EOF

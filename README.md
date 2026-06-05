@@ -8,11 +8,15 @@ MC-Fusion keeps the original Mr. Fusion installation but adds Companion focused 
 
 ## Included extras
 
-- MiSTer Companion Remote script
+- MiSTer Companion Daemon
 - Update All script
 - WiFi setup script
 - Custom wallpaper
-- Samba enabled on first boot
+- Samba enabled on first boot, active after reboot
+- Auto-Time Script
+- Static Wallpaper Script
+- CD Game Organizer Script
+- MiSTer.ini, updated with the latest compatible changes 
 - MiSTer Companion Remote prepared automatically on first boot
 
 ## Requirements

@@ -42,6 +42,11 @@ if [ -f /mnt/release/mc-fusion/mc-fusion.txt ]; then
   cp /mnt/release/mc-fusion/mc-fusion.txt /tmp/release/files/mc-fusion.txt
 fi
 
+## MC-Fusion default MiSTer.ini support
+if [ -f /mnt/release/mc-fusion/MiSTer.ini ]; then
+  cp /mnt/release/mc-fusion/MiSTer.ini /tmp/release/files/MiSTer.ini
+fi
+
 ## MC-Fusion menu wallpaper support
 if [ -f /mnt/release/mc-fusion/menu.png ]; then
   cp /mnt/release/mc-fusion/menu.png /tmp/release/files/menu.png
@@ -75,7 +80,7 @@ if [ ! -f "$MC_FUSION_REMOTE_DONE" ] && [ -x /media/fat/Scripts/companion_remote
 
   # Enable the custom menu background once by sending F1 after the MiSTer menu has loaded.
   (
-    sleep 15
+    sleep 5
 
     if [ -e /dev/uinput ] || modprobe uinput >/dev/null 2>&1; then
       python3 - <<'PYEOF' >/dev/null 2>&1
