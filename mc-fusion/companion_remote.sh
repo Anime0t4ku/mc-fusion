@@ -1,7 +1,7 @@
 #!/bin/sh
 
 TITLE="MiSTer Companion Remote by Anime0t4ku"
-SCRIPT_VERSION="1.0.1"
+SCRIPT_VERSION="1.1.1"
 SCRIPT_PATH="/media/fat/Scripts/companion_remote.sh"
 
 BASE="/media/fat/Scripts/.config/companion_remote"
@@ -102,8 +102,6 @@ EV_ABS = 0x03
 SYN_REPORT = 0
 BUS_USB = 0x03
 
-ABS_HAT0X = 16
-ABS_HAT0Y = 17
 
 BTN_SOUTH = 304
 BTN_EAST = 305
@@ -313,12 +311,6 @@ class RemoteState:
         self.lock = threading.RLock()
         self.held_keys = set()
         self.held_buttons = set()
-        self.dpad = {
-            "up": False,
-            "down": False,
-            "left": False,
-            "right": False,
-        }
 
     def init_devices(self):
         self.keyboard = UInputDevice("MiSTer Companion Virtual Keyboard")
@@ -331,22 +323,11 @@ class RemoteState:
 
         self.controller = UInputDevice("MiSTer Companion Virtual Controller")
         self.controller.enable_ev(EV_KEY)
-        self.controller.enable_ev(EV_ABS)
 
         for code in CONTROLLER_BUTTONS.values():
             self.controller.enable_key(code)
 
-        self.controller.enable_abs(ABS_HAT0X)
-        self.controller.enable_abs(ABS_HAT0Y)
-
-        self.controller.create(
-            0x4D43,
-            0x0002,
-            {
-                ABS_HAT0X: (-1, 1),
-                ABS_HAT0Y: (-1, 1),
-            },
-        )
+        self.controller.create(0x4D43, 0x0002)
 
     def keyboard_key(self, code, down):
         with self.lock:
@@ -367,27 +348,20 @@ class RemoteState:
             self.controller.key(code, down)
 
     def set_dpad(self, name, down):
-        with self.lock:
-            if name not in self.dpad:
-                raise ValueError("Unknown D-pad direction: %s" % name)
+        # MiSTer reliably handles these directions as keyboard navigation keys.
+        # The Companion protocol remains controller-based; only the daemon's
+        # local uinput translation changes.
+        dpad_keys = {
+            "up": KEY_CODES["KEY_UP"],
+            "down": KEY_CODES["KEY_DOWN"],
+            "left": KEY_CODES["KEY_LEFT"],
+            "right": KEY_CODES["KEY_RIGHT"],
+        }
 
-            self.dpad[name] = down
+        if name not in dpad_keys:
+            raise ValueError("Unknown D-pad direction: %s" % name)
 
-            x = 0
-            y = 0
-
-            if self.dpad["left"] and not self.dpad["right"]:
-                x = -1
-            elif self.dpad["right"] and not self.dpad["left"]:
-                x = 1
-
-            if self.dpad["up"] and not self.dpad["down"]:
-                y = -1
-            elif self.dpad["down"] and not self.dpad["up"]:
-                y = 1
-
-            self.controller.abs(ABS_HAT0X, x)
-            self.controller.abs(ABS_HAT0Y, y)
+        self.keyboard_key(dpad_keys[name], down)
 
     def release_all(self):
         with self.lock:
@@ -406,18 +380,6 @@ class RemoteState:
             self.held_keys.clear()
             self.held_buttons.clear()
 
-            self.dpad = {
-                "up": False,
-                "down": False,
-                "left": False,
-                "right": False,
-            }
-
-            try:
-                self.controller.abs(ABS_HAT0X, 0)
-                self.controller.abs(ABS_HAT0Y, 0)
-            except Exception:
-                pass
 
     def destroy(self):
         self.release_all()
